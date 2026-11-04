@@ -1,0 +1,355 @@
+<title>VOXPAL</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Marcellus&family=Barlow+Condensed:wght@600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one compact 2U faceplate, single row of five bays. Every meter and knob is a
+   rendered SVG object (lighting, shadow, glass) rather than a flat CSS shape. Single
+   committed look: vintage hardware, dark lacquer with cream silkscreen. */
+:root {
+  --chassis: #1a1a1b; --chassis-hi: #232325; --chassis-lo: #0f0f10;
+  --cream: #ece3cb; --cream-dim: #a39b86; --rule: rgba(236,227,203,.16);
+  --led-off: #3a3d3a; --led-green: #62e68c; --led-amber: #ffb64c;
+  --head: "EB Garamond", "Garamond", "Georgia", serif;
+  --dialf: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --mono: "DM Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { margin: 0; background: #0a0b0a; color: var(--cream); font-family: var(--head);
+  padding-block: 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* rack: ears on each side, a thick bevelled faceplate in between, one light source top-left */
+.rack { max-width: 1240px; margin: 0 auto; display: flex; align-items: stretch; filter: drop-shadow(0 34px 40px rgba(0,0,0,.85)) drop-shadow(0 4px 6px rgba(0,0,0,.6)); }
+.ear { flex: 0 0 38px; border-radius: 5px 0 0 5px; position: relative;
+  background: linear-gradient(90deg, #1c1c1d 0%, #151516 60%, #0d0d0e 100%);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,.07), inset -1px 0 0 rgba(0,0,0,.9); }
+.ear.r { border-radius: 0 5px 5px 0; background: linear-gradient(270deg, #1c1c1d 0%, #151516 60%, #0d0d0e 100%); box-shadow: inset -1px 1px 0 rgba(255,255,255,.07), inset 1px 0 0 rgba(0,0,0,.9); }
+.ear i { position: absolute; left: 12px; width: 14px; height: 22px; border-radius: 7px; background: radial-gradient(ellipse at 50% 40%, #000 0%, #050505 60%, #2a2a2b 100%);
+  box-shadow: inset 0 2px 3px rgba(0,0,0,1), 0 1px 0 rgba(255,255,255,.08); }
+.ear.r i { left: auto; right: 12px; }
+.ear i:nth-child(1) { top: 14px; } .ear i:nth-child(2) { top: 58px; } .ear i:nth-child(3) { bottom: 58px; } .ear i:nth-child(4) { bottom: 14px; }
+.unit { flex: 1; min-width: 0; position: relative; padding: 14px 22px 18px; background-color: var(--chassis);
+  background-image:
+    linear-gradient(115deg, rgba(255,255,255,.075) 0%, rgba(255,255,255,.02) 35%, rgba(0,0,0,0) 55%, rgba(0,0,0,.28) 100%),
+    radial-gradient(120% 80% at 18% 0%, rgba(255,255,255,.06) 0%, rgba(255,255,255,0) 55%),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.014) 0 1px, rgba(0,0,0,.025) 1px 2px);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.09), inset 2px 0 0 rgba(255,255,255,.05),
+    inset 0 -3px 0 rgba(0,0,0,.95), inset -2px 0 0 rgba(0,0,0,.8),
+    inset 0 0 0 5px #0e0e0f, inset 0 6px 0 5px rgba(255,255,255,.035), inset 0 -7px 0 5px rgba(0,0,0,.6),
+    inset 0 0 60px rgba(0,0,0,.35); }
+.unit::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .22;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .6 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>"); mix-blend-mode: soft-light; }
+.rivet { position: absolute; width: 13px; height: 13px; border-radius: 50%; z-index: 2;
+  background: radial-gradient(circle at 36% 30%, #9a9a98, #4a4a49 45%, #1b1b1b 70%); box-shadow: inset 0 0 0 1px #000, inset 0 -1px 1px rgba(0,0,0,.8), 0 1px 1px rgba(255,255,255,.08), 0 2px 3px rgba(0,0,0,.7); }
+.rivet.tl{top:10px;left:10px}.rivet.tr{top:10px;right:10px}.rivet.bl{bottom:10px;left:10px}.rivet.br{bottom:10px;right:10px}
+
+.rail { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; padding: 6px 8px 12px; margin-bottom: 14px; position: relative; }
+.rail::after { content: ""; position: absolute; left: 4px; right: 4px; bottom: 0; height: 2px; background: linear-gradient(180deg, rgba(0,0,0,.9), rgba(255,255,255,.07)); border-radius: 1px; }
+.brand .name { font-family: "Marcellus", "Trajan Pro", "EB Garamond", serif; font-size: 36px; font-weight: 400; letter-spacing: .2em; line-height: 1; color: var(--cream); text-shadow: 0 -1px 0 rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.08); }
+.brand .sub { font-family: var(--mono); font-size: 9.5px; letter-spacing: .14em; color: var(--cream-dim); margin-top: 5px; text-transform: uppercase; }
+.spacer { flex: 1; }
+.rail-group { display: flex; align-items: flex-end; gap: 22px; }
+
+/* push button: black bakelite cap in a chrome bezel, lamp lights when engaged */
+.sw { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; user-select: none; background: none; border: 0; color: inherit; font: inherit; padding: 0; }
+.sw svg { width: 44px; height: 44px; display: block; }
+.sw .lbl { font-size: 11px; font-weight: 600; letter-spacing: .14em; color: var(--cream-dim); }
+.sw.on .lbl { color: var(--cream); }
+.sw .cap { transition: transform .08s; transform-origin: 22px 22px; }
+.sw.on .cap { transform: scale(.94); }
+.sw .lamp { fill: #3a3a36; transition: fill .12s; }
+.sw.on .lamp { fill: #ffb64c; filter: url(#lampGlow); }
+.sw:focus-visible svg { outline: 2px solid var(--cream); outline-offset: 3px; border-radius: 50%; }
+
+.bays { display: grid; grid-template-columns: 1fr 1fr 1.75fr 1fr 1fr; gap: 10px; align-items: stretch; }
+.bay { position: relative; padding: 10px 6px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  border-radius: 4px; transition: opacity .2s;
+  background: linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.14) 30%, rgba(0,0,0,.18));
+  box-shadow: inset 0 3px 6px rgba(0,0,0,.75), inset 0 1px 0 rgba(0,0,0,.9), inset 0 -1px 0 rgba(255,255,255,.07), 0 1px 0 rgba(255,255,255,.05); }
+.bay.off .pair, .bay.off .knob { opacity: .35; }
+.bay-title { font-size: 16px; font-weight: 600; letter-spacing: .22em; color: var(--cream); text-transform: uppercase;
+  text-shadow: 0 -1px 0 rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.07); padding: 0 10px; margin-top: -2px; line-height: 1.1; text-align: center; }
+.bay-title small { display: block; font-family: var(--mono); font-size: 8.5px; letter-spacing: .08em; color: var(--cream-dim); font-weight: 400; margin-top: 2px; text-transform: none; }
+.pairs { display: flex; justify-content: center; align-items: flex-end; gap: 10px; width: 100%; flex-wrap: wrap; margin-top: 6px; }
+.pair { display: flex; align-items: flex-end; gap: 2px; }
+.pair.stack { flex-direction: column; align-items: center; gap: 6px; }
+.pairs.col { flex-direction: column; align-items: center; gap: 8px; }
+.pairs.col .pair { align-items: center; }
+.pair.stack .vu { width: 128px; }
+.pwr { position: absolute; top: 7px; right: 7px; width: 10px; height: 10px; border-radius: 50%; border: 0; cursor: pointer; padding: 0;
+  background: radial-gradient(circle at 40% 40%, #fff3cc, #e1b74d 55%, #74561f); box-shadow: 0 0 8px rgba(225,183,77,.75), inset 0 0 0 1px rgba(0,0,0,.6); }
+.pwr.off { background: radial-gradient(circle at 40% 40%, #4a4d4a, #262826 70%); box-shadow: inset 0 0 0 1px rgba(0,0,0,.6); }
+.pwr:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+
+.vu { width: 128px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.vu svg { width: 100%; height: auto; display: block; }
+.led { width: 10px; height: 10px; border-radius: 50%; background: var(--led-off); box-shadow: inset 0 1px 2px rgba(0,0,0,.85), 0 0 0 1px #000; transition: background .12s, box-shadow .12s; }
+.led.green { background: var(--led-green); box-shadow: 0 0 9px var(--led-green), inset 0 0 2px #fff, 0 0 0 1px #000; }
+.led.amber { background: var(--led-amber); box-shadow: 0 0 9px var(--led-amber), inset 0 0 2px #fff, 0 0 0 1px #000; }
+
+.knob { display: flex; flex-direction: column; align-items: center; gap: 0; width: 112px; user-select: none; touch-action: none; }
+.knob svg { width: 108px; height: 108px; display: block; }
+.knob .hit { cursor: ns-resize; }
+.knob .lbl { font-size: 12px; font-weight: 600; letter-spacing: .16em; color: var(--cream); text-transform: uppercase; text-shadow: 0 -1px 0 rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.06); margin-top: -2px; }
+.knob .val { font-family: var(--mono); font-size: 10px; color: var(--cream-dim); font-variant-numeric: tabular-nums; opacity: 0; transition: opacity .15s; min-height: 13px; }
+.knob:hover .val, .knob.dragging .val, .knob:focus-within .val { opacity: 1; }
+.knob:focus-within svg { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 50%; }
+.knob.small svg { width: 72px; height: 72px; }
+.knob.small { width: 76px; }
+
+.bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 0 4px; flex-wrap: wrap; gap: 8px; }
+.note { font-family: var(--mono); font-size: 9.5px; color: var(--cream-dim); letter-spacing: .05em; }
+.note b { color: var(--cream); font-weight: 500; }
+
+@media (max-width: 1000px) { .bays { grid-template-columns: 1fr 1fr; } .bay.wide { grid-column: span 2; } .ear { display: none; } .unit { border-radius: 5px; } }
+@media (max-width: 520px) { .bays { grid-template-columns: 1fr; } .bay.wide { grid-column: auto; } .brand .name { font-size: 22px; } }
+@media (prefers-reduced-motion: reduce) { .sw .bat, .led { transition: none; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- shared lighting for knobs -->
+    <radialGradient id="kBody" cx="42%" cy="30%" r="70%"><stop offset="0" stop-color="#4a4a4a"/><stop offset=".35" stop-color="#232323"/><stop offset="1" stop-color="#050505"/></radialGradient>
+    <radialGradient id="kStep" cx="45%" cy="35%" r="65%"><stop offset="0" stop-color="#3a3a3a"/><stop offset=".6" stop-color="#171717"/><stop offset="1" stop-color="#0a0a0a"/></radialGradient>
+    <radialGradient id="kDome" cx="40%" cy="28%" r="70%"><stop offset="0" stop-color="#595959"/><stop offset=".45" stop-color="#262626"/><stop offset="1" stop-color="#0d0d0d"/></radialGradient>
+    <linearGradient id="kRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></linearGradient>
+    <filter id="kShadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="5" stdDeviation="3.5" flood-color="#000" flood-opacity=".75"/></filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.2"/></filter>
+    <filter id="lampGlow" x="-100%" y="-100%" width="300%" height="300%"><feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#ffb64c" flood-opacity=".9"/></filter>
+    <!-- VU dial -->
+    <radialGradient id="dialGlow" cx="50%" cy="78%" r="80%"><stop offset="0" stop-color="#f4d89a"/><stop offset=".55" stop-color="#eed9a6"/><stop offset="1" stop-color="#d9c08a"/></radialGradient>
+    <linearGradient id="bezelG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2928"/><stop offset=".5" stop-color="#171615"/><stop offset="1" stop-color="#0c0b0b"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2=".4" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".42"/><stop offset=".35" stop-color="#fff" stop-opacity=".06"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <radialGradient id="screw" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#f2f2f0"/><stop offset=".45" stop-color="#a9aaa6"/><stop offset="1" stop-color="#3b3c3a"/></radialGradient>
+    <filter id="needleShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="1.5" dy="2.5" stdDeviation="1.2" flood-color="#5a3f1c" flood-opacity=".55"/></filter>
+    <filter id="inset" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur in="SourceAlpha" stdDeviation="3" result="b"/><feOffset dy="3" in="b" result="o"/><feComposite in="o" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="i"/><feColorMatrix in="i" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0" result="s"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="s"/></feMerge></filter>
+  </defs>
+</svg>
+
+<div class="rack">
+<div class="ear l"><i></i><i></i><i></i><i></i></div>
+<div class="unit">
+  <div class="rivet tl"></div><div class="rivet tr"></div><div class="rivet bl"></div><div class="rivet br"></div>
+
+  <div class="rail">
+    <div class="brand"><div class="name">VOXPAL</div></div>
+    <div class="spacer"></div>
+    <div class="rail-group">
+      <button class="sw" id="sw-match" type="button"></button>
+      <button class="sw" id="sw-bypass" type="button"></button>
+      <div class="knob small" id="k-output"></div>
+    </div>
+  </div>
+
+  <div class="bays">
+    <section class="bay" id="bay-fet">
+      <button class="pwr" type="button" aria-label="Compressor 1 on/off"></button>
+      <div class="bay-title">TOM</div>
+      <div class="pairs"><div class="pair stack"><div class="vu" id="m-fet"></div><div class="knob" id="k-comp1"></div></div></div>
+    </section>
+    <section class="bay" id="bay-opto">
+      <button class="pwr" type="button" aria-label="Compressor 2 on/off"></button>
+      <div class="bay-title">SPIKE</div>
+      <div class="pairs"><div class="pair stack"><div class="vu" id="m-opto"></div><div class="knob" id="k-comp2"></div></div></div>
+    </section>
+    <section class="bay wide" id="bay-ctrl">
+      <button class="pwr" type="button" aria-label="Control on/off"></button>
+      <div class="bay-title">CONTROL</div>
+      <div class="pairs col">
+        <div class="pair"><div class="vu" id="m-harsh"></div><div class="knob" id="k-harsh"></div></div>
+        <div class="pair"><div class="vu" id="m-boom"></div><div class="knob" id="k-boom"></div></div>
+      </div>
+    </section>
+    <section class="bay" id="bay-eq">
+      <button class="pwr" type="button" aria-label="EQ on/off"></button>
+      <div class="bay-title">EQ</div>
+      <div class="pairs col"><div class="knob" id="k-high"></div><div class="knob" id="k-low"></div></div>
+    </section>
+    <section class="bay" id="bay-air">
+      <button class="pwr" type="button" aria-label="Air on/off"></button>
+      <div class="bay-title">MAGIC</div>
+      <div class="pairs col"><div class="knob" id="k-air"></div><div class="knob" id="k-presence"></div></div>
+    </section>
+  </div>
+
+</div>
+<div class="ear r"><i></i><i></i><i></i><i></i></div>
+</div>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const P = (cx, cy, r, deg) => [cx + r * Math.sin(deg * Math.PI / 180), cy - r * Math.cos(deg * Math.PI / 180)];
+
+  // ---------- Knob: fluted skirt, stepped body, raised dome, white dot. Scale printed on the panel.
+  function flutedPath(cx, cy, R, depth, n) {
+    let d = '';
+    const steps = n * 8;
+    for (let i = 0; i <= steps; i++) {
+      const th = i / steps * Math.PI * 2;
+      const r = R - depth * (0.5 + 0.5 * Math.cos(n * th));
+      const x = cx + r * Math.cos(th), y = cy + r * Math.sin(th);
+      d += (i ? 'L' : 'M') + x.toFixed(2) + ' ' + y.toFixed(2);
+    }
+    return d + 'Z';
+  }
+  const knobs = {};
+  function knob(id, label, min, max, def, fmt, scaleLabels, step) {
+    const el = $('#' + id);
+    const c = 60;
+    let scale = '';
+    for (let i = 0; i <= 10; i++) {
+      const a = -135 + 27 * i;
+      const [dx, dy] = P(c, c, 44, a);
+      scale += `<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="1.4" fill="var(--cream)"/>`;
+      if (i % 2 === 0 && scaleLabels) { const [tx, ty] = P(c, c, 53, a);
+        scale += `<text x="${tx.toFixed(1)}" y="${(ty + 3).toFixed(1)}" font-size="8.5" font-family="var(--dialf)" font-weight="600" fill="var(--cream)" text-anchor="middle" transform="rotate(${a} ${tx.toFixed(1)} ${ty.toFixed(1)})">${scaleLabels[i / 2]}</text>`; }
+    }
+    scale += `<path d="M${c - 3} 6 L${c + 3} 6 L${c} 11 Z" fill="var(--cream)"/>`;
+    el.innerHTML = `<svg viewBox="0 0 120 120">
+      ${scale}
+      <g class="hit" tabindex="0" role="slider" aria-label="${label}" aria-valuemin="${min}" aria-valuemax="${max}">
+        <g filter="url(#kShadow)"><path d="${flutedPath(c, c, 36, 2.6, 22)}" fill="url(#kBody)"/></g>
+        <path d="${flutedPath(c, c, 36, 2.6, 22)}" fill="url(#kRim)"/>
+        <circle cx="${c}" cy="${c}" r="27" fill="url(#kStep)" stroke="#000" stroke-opacity=".6" stroke-width=".6"/>
+        <circle cx="${c}" cy="${c}" r="27" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width=".8" stroke-dasharray="40 130" transform="rotate(-60 ${c} ${c})"/>
+        <circle cx="${c}" cy="${c}" r="20" fill="url(#kDome)"/>
+        <ellipse cx="${c - 5}" cy="${c - 8}" rx="9" ry="5.5" fill="#fff" fill-opacity=".10" filter="url(#soft)"/>
+        <g class="ptr" transform="rotate(0 ${c} ${c})"><circle cx="${c}" cy="${c - 30.5}" r="3.1" fill="#f6f2e6"/><circle cx="${c - .8}" cy="${c - 31.3}" r="1.2" fill="#fff"/></g>
+      </g></svg><div class="lbl">${label}</div><div class="val"></div>`;
+    const hit = $('.hit', el), ptr = $('.ptr', el), val = $('.val', el);
+    const k = { v: def, min, max, def, set(v) { v = clamp(v, min, max); if (step) v = Math.round(v / step) * step; k.v = v; draw(); } };
+    function draw() { const t = (k.v - min) / (max - min); ptr.setAttribute('transform', `rotate(${(-135 + 270 * t).toFixed(2)} ${c} ${c})`); val.textContent = fmt(k.v); hit.setAttribute('aria-valuenow', k.v.toFixed(1)); }
+    let y0 = 0, v0 = 0, pid = null, lastDown = 0, moved = false;
+    hit.addEventListener('pointerdown', e => {
+      const now = performance.now();
+      if (now - lastDown < 400 && !moved) { k.set(def); lastDown = 0; e.preventDefault(); return; }   // double-click: reset
+      lastDown = now; moved = false;
+      y0 = e.clientY; v0 = k.v; pid = e.pointerId; hit.setPointerCapture(e.pointerId); el.classList.add('dragging'); e.preventDefault(); });
+    hit.addEventListener('pointermove', e => { if (pid !== e.pointerId) return; if (Math.abs(e.clientY - y0) > 3) moved = true; k.set(v0 + (y0 - e.clientY) / 150 * (max - min)); });
+    hit.addEventListener('pointerup', () => { pid = null; el.classList.remove('dragging'); });
+    hit.addEventListener('pointercancel', () => { pid = null; el.classList.remove('dragging'); });
+    hit.addEventListener('keydown', e => { const s = (max - min) / 50;
+      if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { k.set(k.v + s); e.preventDefault(); }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { k.set(k.v - s); e.preventDefault(); }
+      if (e.key === 'Home') k.set(def); });
+    hit.addEventListener('wheel', e => { k.set(k.v - Math.sign(e.deltaY) * (max - min) / 60); e.preventDefault(); }, { passive: false });
+    draw(); knobs[id] = k; return k;
+  }
+  const db = v => (v > 0 ? '+' : '') + v.toFixed(1) + ' dB', pos = v => v.toFixed(1);
+  const tenScale = ['0','2','4','6','8','10'];
+  knob('k-comp1', 'TOM', -12, 12, 0, db, ['-12','-6','0','6','12','']);
+  knob('k-comp2', 'SPIKE', 0, 100, 50, v => v.toFixed(0), ['0','20','40','60','80','100']);
+  knob('k-boom',  'BOOM',  0, 10, 5, pos, tenScale);
+  knob('k-harsh', 'HARSH', 0, 10, 5, pos, tenScale);
+  knob('k-low',   'LOW',   0, 10, 3, pos, tenScale, 0.5);
+  knob('k-high',  'HIGH',  0, 10, 3, pos, tenScale, 0.5);
+  knob('k-air',   'AIR',   0, 8, 4, db, ['0','','4','','8',''], 0.5);
+  knob('k-presence', 'PRESENCE', 0, 12, 0, db, ['0','','6','','12',''], 0.5);
+  knob('k-output','OUTPUT',-12, 12, 0, db, null);
+
+  // ---------- VU: arched glass window in a bakelite bezel, warm backlit dial, bold scale,
+  // green aim arc, red over arc, black needle with shadow, chrome screws, vent slots.
+  function dial(id, lo, hi, legend) {
+    const el = $('#' + id);
+    const cx = 100, cy = 152, R = 98;             // pivot sits under the bezel like the real thing
+    const ang = gr => 44 - gr / 12 * 88;          // 0 dB at +44°, 12 dB at -44°
+    const pt = (gr, r) => P(cx, cy, r, ang(gr));
+    const arc = (g1, g2, r) => { const [x1, y1] = pt(g1, r), [x2, y2] = pt(g2, r); return `M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 0 0 ${x2.toFixed(1)} ${y2.toFixed(1)}`; };
+    let ticks = '';
+    for (let g = 0; g <= 12; g++) { const major = g % 3 === 0, mid = g % 3 !== 0; const len = major ? 11 : 6;
+      const [x1, y1] = pt(g, R), [x2, y2] = pt(g, R - len);
+      ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#26211c" stroke-width="${major ? 2.2 : 1.3}" stroke-linecap="round"/>`;
+      if (major) { const [tx, ty] = pt(g, R - 21); const a = ang(g);
+        ticks += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-size="13" text-anchor="middle" dominant-baseline="middle" fill="#26211c" font-family="var(--dialf)" font-weight="700" transform="rotate(${a} ${tx.toFixed(1)} ${ty.toFixed(1)})">${g === 0 ? '0' : '-' + g}</text>`; } }
+    const win = `M14 118 L14 62 Q14 14 62 14 L138 14 Q186 14 186 62 L186 118 Q186 124 180 124 L20 124 Q14 124 14 118 Z`;
+    el.innerHTML = `<svg viewBox="0 0 200 172" aria-label="${legend} gain reduction meter">
+      <defs><clipPath id="clip-${id}"><path d="${win}"/></clipPath></defs>
+      <rect x="1" y="1" width="198" height="170" rx="16" fill="url(#bezelG)" stroke="#000" stroke-width="1.2"/>
+      <rect x="2.5" y="2.5" width="195" height="167" rx="15" fill="none" stroke="#fff" stroke-opacity=".10" stroke-width="1"/>
+      <rect x="4" y="4" width="192" height="164" rx="13" fill="none" stroke="#000" stroke-opacity=".6" stroke-width="2"/>
+      <g filter="url(#inset)"><path d="${win}" fill="url(#dialGlow)"/></g>
+      <g clip-path="url(#clip-${id})">
+        <path d="${arc(0, 12, R)}" fill="none" stroke="#26211c" stroke-width="2"/>
+        <path d="${arc(lo, hi, R - 1)}" fill="none" stroke="#3fbf66" stroke-width="7" opacity=".9"/>
+        <path d="${arc(hi, 12, R - 1)}" fill="none" stroke="#c43a2e" stroke-width="5" opacity=".9"/>
+        ${ticks}
+        <text x="100" y="98" font-size="11" text-anchor="middle" fill="#9c2f27" font-family="var(--dialf)" font-weight="700" letter-spacing="2.5">GR</text>
+        <text x="100" y="114" font-size="7.5" text-anchor="middle" fill="#4a3f33" font-family="var(--dialf)" font-weight="600" letter-spacing="1.5">${legend}</text>
+        <g class="needle" transform="rotate(44 ${cx} ${cy})" filter="url(#needleShadow)">
+          <path d="M${cx - 1.6} ${cy} L${cx} ${cy - R - 2} L${cx + 1.6} ${cy} Z" fill="#1b1612"/>
+        </g>
+        <path d="${win}" fill="url(#glass)"/>
+        <path d="M38 30 Q100 12 162 30" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="5" filter="url(#soft)"/>
+      </g>
+      <path d="${win}" fill="none" stroke="#000" stroke-opacity=".8" stroke-width="2.5"/>
+      <path d="${win}" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="1" transform="translate(0 1)"/>
+      <g><circle cx="28" cy="122" r="6" fill="url(#screw)" stroke="#111" stroke-width=".8"/><rect x="24.5" y="121.2" width="7" height="1.6" fill="#333" transform="rotate(-25 28 122)"/></g>
+      <g><circle cx="172" cy="122" r="6" fill="url(#screw)" stroke="#111" stroke-width=".8"/><rect x="168.5" y="121.2" width="7" height="1.6" fill="#333" transform="rotate(15 172 122)"/></g>
+      ${[-16,-8,0,8,16].map(dx => `<rect x="${99 + dx}" y="136" width="2.4" height="26" rx="1.2" fill="#070707"/><rect x="${99.4 + dx}" y="136.6" width="1" height="25" rx=".5" fill="#fff" fill-opacity=".06"/>`).join('')}
+      <circle cx="100" cy="149" r="4.2" fill="url(#screw)" stroke="#111" stroke-width=".8"/><rect x="97.5" y="148.3" width="5" height="1.4" fill="#333" transform="rotate(35 100 149)"/>
+    </svg><div class="led"></div>`;
+    const needle = $('.needle', el), led = $('.led', el);
+    let avg = 0, posn = 0;
+    return {
+      update(gr, dt) { avg += (gr - avg) * Math.min(1, dt / 0.4); posn += (gr - posn) * Math.min(1, dt / 0.09);
+        needle.setAttribute('transform', `rotate(${ang(clamp(posn, 0, 12)).toFixed(2)} ${cx} ${cy})`);
+        led.className = 'led ' + (avg < lo ? '' : avg > hi ? 'amber' : 'green'); },
+      off() { needle.setAttribute('transform', `rotate(44 ${cx} ${cy})`); led.className = 'led'; avg = posn = 0; }
+    };
+  }
+  const mFet = dial('m-fet', 2, 5, 'TOM'), mOpto = dial('m-opto', 3, 5, 'SPIKE');
+  const mBoom = dial('m-boom', 2, 4, '200 – 350 HZ'), mHarsh = dial('m-harsh', 3, 4, '2.5 – 5.5 KHZ');
+
+  // ---------- Bat-handle toggles
+  const state = { match: false, bypass: false, fet: true, opto: true, ctrl: true, eq: true, air: true };
+  function toggle(btn, key, label, onChange) {
+    btn.innerHTML = `<svg viewBox="0 0 44 44">
+      <circle cx="22" cy="22" r="19" fill="url(#screw)" stroke="#000" stroke-width=".8"/>
+      <circle cx="22" cy="22" r="16.5" fill="#0a0a0a"/>
+      <g class="cap" filter="url(#kShadow)"><circle cx="22" cy="22" r="15" fill="url(#kBody)"/><circle cx="22" cy="22" r="15" fill="url(#kRim)"/>
+      <circle cx="22" cy="22" r="10.5" fill="url(#kDome)"/><ellipse cx="19" cy="18" rx="5" ry="3" fill="#fff" fill-opacity=".10" filter="url(#soft)"/>
+      <circle class="lamp" cx="22" cy="22" r="3.6"/><circle cx="22" cy="22" r="3.6" fill="none" stroke="#000" stroke-opacity=".7" stroke-width=".8"/></g>
+    </svg><span class="lbl">${label}</span>`;
+    const paint = () => btn.classList.toggle('on', state[key]);
+    btn.addEventListener('click', () => { state[key] = !state[key]; paint(); onChange && onChange(); }); paint();
+  }
+  toggle($('#sw-match'), 'match', 'GAIN MATCH');
+  toggle($('#sw-bypass'), 'bypass', 'BYPASS', () => document.querySelectorAll('.bay').forEach(b => b.classList.toggle('off', state.bypass)));
+  [['bay-fet','fet'],['bay-opto','opto'],['bay-ctrl','ctrl'],['bay-eq','eq'],['bay-air','air']].forEach(([id, key]) => {
+    const bay = $('#' + id), btn = $('.pwr', bay);
+    btn.addEventListener('click', () => { state[key] = !state[key]; btn.classList.toggle('off', !state[key]); bay.classList.toggle('off', !state[key] || state.bypass); });
+  });
+
+  // ---------- simulated vocal + rough stage models driving the needles
+  let t = 0, last = performance.now();
+  let fetEnv = 0, optoFast = 0, optoSlow = 0, optoHist = 0, boomEnv = 0, harshEnv = 0;
+  function vocalLevelDb(t) { const phrase = (t % 3.2) < 2.4 ? 1 : 0; const syll = 0.55 + 0.45 * Math.max(0, Math.sin(t * 2 * Math.PI * 3.1)) ** 1.6;
+    const lvl = phrase * syll * (0.8 + 0.2 * Math.sin(t * 0.7)); return lvl > 0.01 ? -12 + 20 * Math.log10(lvl) : -60; }
+  function follow(env, target, dt, att, rel) { const c = target > env ? Math.exp(-dt / att) : Math.exp(-dt / rel); return c * env + (1 - c) * target; }
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
+    const lvl = vocalLevelDb(t);
+    if (state.bypass) { mFet.off(); mOpto.off(); mBoom.off(); mHarsh.off(); requestAnimationFrame(frame); return; }
+    let grF = 0;
+    if (state.fet) { const over = lvl + knobs['k-comp1'].v + 18; fetEnv = follow(fetEnv, over > 0 ? over * 0.75 : 0, dt, 0.002, 0.05); grF = fetEnv; } else fetEnv = 0;
+    const afterFet = lvl - grF * 0.4;
+    let grO = 0;
+    if (state.opto) { const th = -14 - knobs['k-comp2'].v * 0.5; const over = afterFet - th; const tgt = over > 0 ? over * 0.55 : 0;
+      // T4 cell: fast stage recovers ~half in 60 ms, slow stage takes 0.5–5 s depending on how long it's been lit
+      optoHist = follow(optoHist, tgt, dt, 0.3, 6);
+      optoFast = follow(optoFast, tgt, dt, 0.01, 0.06);
+      optoSlow = follow(optoSlow, tgt, dt, 0.12, 0.5 + 4.5 * Math.min(1, optoHist / 8));
+      grO = 0.5 * optoFast + 0.5 * optoSlow; } else optoFast = optoSlow = 0;
+    let grB = 0, grH = 0;
+    if (state.ctrl) { const bandLvl = afterFet - grO * 0.5 - 9; const thB = -4.8 * knobs['k-boom'].v, thH = -4.8 * knobs['k-harsh'].v;
+      boomEnv = follow(boomEnv, Math.min(8, Math.max(0, (bandLvl - 2 - thB) * 0.6)), dt, 0.008, 0.12);
+      harshEnv = follow(harshEnv, Math.min(10, Math.max(0, (bandLvl - thH) * 0.6)), dt, 0.004, 0.09); grB = boomEnv; grH = harshEnv; } else boomEnv = harshEnv = 0;
+    mFet.update(grF, dt); mOpto.update(grO, dt); mBoom.update(grB, dt); mHarsh.update(grH, dt);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
