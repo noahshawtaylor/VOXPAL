@@ -25,7 +25,7 @@ jobs:
           # and the pkg will be Developer-ID signed. Leave unset for an unsigned (local-use) pkg.
           DEVELOPER_ID_APPLICATION: ${{ secrets.DEVELOPER_ID_APPLICATION }}
           DEVELOPER_ID_INSTALLER: ${{ secrets.DEVELOPER_ID_INSTALLER }}
-       run: bash scripts/make-pkg.sh
+        run: bash scripts/make-pkg.sh
       - name: Notarize (only when Apple credentials are present)
         if: ${{ env.APPLE_ID != '' }}
         env:
