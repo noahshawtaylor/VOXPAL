@@ -1,0 +1,42 @@
+name: Build macOS installer
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  mac:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+      - name: Build
+        run: cmake --build build --config Release -- -quiet
+      - name: Validate AU
+        run: |
+          mkdir -p ~/Library/Audio/Plug-Ins/Components
+          cp -R "build/VocalChain_artefacts/Release/AU/VOXPAL.component" ~/Library/Audio/Plug-Ins/Components/
+          killall -9 AudioComponentRegistrar || true
+          auval -v aufx Vxpl Nsta || true
+      - name: Build installer (.pkg)
+        env:
+          # Optional. Add these repository secrets once you have an Apple Developer account
+          # and the pkg will be Developer-ID signed. Leave unset for an unsigned (local-use) pkg.
+          DEVELOPER_ID_APPLICATION: ${{ secrets.DEVELOPER_ID_APPLICATION }}
+          DEVELOPER_ID_INSTALLER: ${{ secrets.DEVELOPER_ID_INSTALLER }}
+        run: ./scripts/make-pkg.sh
+      - name: Notarize (only when Apple credentials are present)
+        if: ${{ env.APPLE_ID != '' }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          PKG=$(ls dist/*.pkg)
+          xcrun notarytool submit "$PKG" --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD" --wait
+          xcrun stapler staple "$PKG"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VOXPAL-macOS-installer
+          path: dist/*.pkg
